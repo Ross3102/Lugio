@@ -2,37 +2,66 @@ from random import randint
 
 import pygame
 
-from character import Character
+from character import Player, Character
 from colors import *
 from room import Room, RandomRoom
 from rooms import room_layouts
 
 
-def drawFrame():
+def draw_frame():
     screen.fill(BLACK)  # DIRT_BROWN
 
-    character.update()
+    player.update()
     room.update(ch.dx, ch.dy)
+    npcs.update(ch.dx, ch.dy)
 
-    ch.check_collide(room)
+    ch.check_collide(all_sprites, collision_sprites)
 
     room.draw(screen)
-    character.draw(screen)
+
+    behind = pygame.sprite.Group()
+    front = pygame.sprite.Group()
+
+    for npc in npcs:
+        if npc.rect.y < ch.rect.y:
+            behind.add(npc)
+        else:
+            front.add(npc)
+
+    behind.draw(screen)
+    player.draw(screen)
+    front.draw(screen)
 
     pygame.display.flip()
-    return False
 
 
-def sayThings(character, messages, wait):
-    text_sound = pygame.mixer.Sound(TEXT_SOUND_FILE)
-    text_sound.set_volume(0.25)
+def say_things(character, messages, wait):
     for message in messages:
-        if character.say(message, text_sound):
+        if character.say(message):
             return True
-        drawFrame()
+        draw_frame()
         pygame.event.pump()
         pygame.time.delay(wait)
     return False
+
+
+def game_loop():
+    done = False
+    gameStart = True
+
+    while not done:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                done = True
+
+        ch.handle_keys(all_sprites)
+        draw_frame()
+
+        if gameStart and say_things(ch, ["Welcome To The Game", "Hope You Have Fun!"], 200):
+            done = True
+        gameStart = False
+
+        clock.tick(FPS)
 
 GAME_TITLE = "Lugio"
 
@@ -59,9 +88,15 @@ screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
 pygame.display.set_caption(GAME_TITLE)
 clock = pygame.time.Clock()
 
-character = pygame.sprite.Group()
-ch = Character(CHARACTER_SHEET, screen)
-character.add(ch)
+all_sprites = pygame.sprite.Group()
+collision_sprites = pygame.sprite.Group()
+npcs = pygame.sprite.Group()
+
+text_sound = pygame.mixer.Sound(TEXT_SOUND_FILE)
+text_sound.set_volume(0.25)
+player= pygame.sprite.Group()
+ch = Player(CHARACTER_SHEET, text_sound, screen, 288, 288)
+player.add(ch)
 
 rand = False
 
@@ -70,24 +105,14 @@ if rand:
 else:
     room = Room(ROOM_SHEET, room_layouts.start)
 
-done = False
-gameStart = True
+[all_sprites.add(i) for i in room]
+[collision_sprites.add(i) for i in room.walls]
 
-while not done:
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            done = True
+npc1 = Character(CHARACTER_SHEET, text_sound, screen, 180, 240)
+npcs.add(npc1)
+all_sprites.add(npc1)
+collision_sprites.add(npc1)
 
-    ch.handle_keys()
-    drawFrame()
-
-    if gameStart and sayThings(ch, ["Welcome to the GameWelcome to the GameWelcome to the GameWelcome to the GameWelcome to the GameWelcome to the GameWelcome to the GameWelcome to the GameWelcome to the GameWelcome to the GameWelcome to the GameWelcome to the GameWelcome to the Game", "Hope you have fun!"], 200):
-        done = True
-    gameStart = False
-
-    clock.tick(FPS)
-
-
+game_loop()
 pygame.quit()
 quit()
-# Test
