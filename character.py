@@ -47,8 +47,8 @@ class Character(pygame.sprite.Sprite):
         self.image = self.sprites[self.direction][self.pos]
 
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.x = x+HORIZONTAL_SPACE[0]
+        self.rect.y = y+VERTICAL_SPACE[0]
 
     def update(self, dx, dy):
         self.rect.x -= dx
@@ -79,7 +79,7 @@ class Character(pygame.sprite.Sprite):
         self.interact_rect.y = y
 
     def say(self, message, wait=0):
-        font_size = 40
+        font_size = 25
         font = pygame.font.SysFont("Courier New", font_size)
         text_width, text_height = font.size(message)
         x_offset = -(text_width - self.rect.width) / 2
@@ -134,7 +134,7 @@ class Player(Character):
             r = i.rect
             if self.interact_rect.colliderect(r):
                 try:
-                    i.say("Hello", 100)
+                    i.say("Hello, would you like to buy anything", 100)
                 except:
                     pass
 

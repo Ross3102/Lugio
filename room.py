@@ -1,6 +1,7 @@
 import pygame
 from spritesheet import spritesheet
 from random import randint
+from character import Character
 
 
 class Room(pygame.sprite.Group):
@@ -31,6 +32,7 @@ class Room(pygame.sprite.Group):
         self.three_wall = [pygame.transform.scale(i, (64, 64)) for i in self.sheet.load_strip((0, 64, 16, 16), 4)]
 
         self.walls = pygame.sprite.Group()
+        self.npcs = []
 
         character_coords = [(array[i].index("X")*64, i*64) for i in range(len(array)) if "X" in array[i]][0]
 
@@ -82,6 +84,8 @@ class Room(pygame.sprite.Group):
                     else:
                         image = self.single
                 else:
+                    if array[y][x] == "N":
+                        self.npcs.append((x*64 - character_coords[0] + 288, y*64 - character_coords[1] + 288))
                     image = self.dirt
                     wall = False
                 block = Block(x*64 - character_coords[0] + 288, y*64 - character_coords[1] + 288, image)
@@ -104,6 +108,7 @@ class RandomRoom(Room):
 
         array[randint(0, height-1)][randint(0, height-1)] = "X"
         super(RandomRoom, self).__init__(filename, array)
+
 
 class Block(pygame.sprite.Sprite):
     def __init__(self, x, y, image):
