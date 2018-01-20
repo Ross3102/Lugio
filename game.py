@@ -31,8 +31,6 @@ def draw_frame():
     player.draw(screen)
     front.draw(screen)
 
-    pygame.draw.rect(screen, (255, 0, 0), ch.interact_rect)
-
     pygame.display.flip()
 
 
@@ -58,7 +56,7 @@ def game_loop():
         ch.handle_keys(all_sprites)
         draw_frame()
 
-        if gameStart and say_things(ch, ["Welcome To The Game", "Hope You Have Fun!"], 200):
+        if gameStart and say_things(ch, ["Welcome To The Game", "Hope You Have Fun!", "Hi Max", "Wow", "This is cool"], 200):
             done = True
         gameStart = False
 
