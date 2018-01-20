@@ -1,15 +1,14 @@
-from random import randint
-
 import pygame
+from pygame.locals import *
 
-from character import Player, Character
-from colors import *
+import character
+import colors
 from room import Room, RandomRoom
 from rooms import room_layouts
 
 
 def draw_frame():
-    screen.fill(BLACK)  # DIRT_BROWN
+    screen.fill(colors.BLACK)  # DIRT_BROWN
 
     player.update()
     room.update(ch.dx, ch.dy)
@@ -31,6 +30,8 @@ def draw_frame():
     behind.draw(screen)
     player.draw(screen)
     front.draw(screen)
+
+    pygame.draw.rect(screen, (255, 0, 0), ch.interact_rect)
 
     pygame.display.flip()
 
@@ -95,7 +96,7 @@ npcs = pygame.sprite.Group()
 text_sound = pygame.mixer.Sound(TEXT_SOUND_FILE)
 text_sound.set_volume(0.25)
 player= pygame.sprite.Group()
-ch = Player(CHARACTER_SHEET, text_sound, screen, 288, 288)
+ch = character.Player(CHARACTER_SHEET, text_sound, screen, 288, 288)
 player.add(ch)
 
 rand = False
@@ -108,10 +109,11 @@ else:
 [all_sprites.add(i) for i in room]
 [collision_sprites.add(i) for i in room.walls]
 
-npc1 = Character(CHARACTER_SHEET, text_sound, screen, 180, 240)
-npcs.add(npc1)
-all_sprites.add(npc1)
-collision_sprites.add(npc1)
+for coord in room.npcs:
+    npc = character.Character(CHARACTER_SHEET, text_sound, screen, coord[0], coord[1])
+    npcs.add(npc)
+    all_sprites.add(npc)
+    collision_sprites.add(npc)
 
 game_loop()
 pygame.quit()
