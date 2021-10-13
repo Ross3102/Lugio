@@ -1,4 +1,2 @@
 # Lugio
-This game is currently in development and will be created using Python and Pygame
-
-Pivotal Tracker: https://www.pivotaltracker.com/n/projects/2144581
+A simple framework for a 2D game with Python and Pygame
